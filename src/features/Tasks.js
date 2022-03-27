@@ -1,19 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const exampleData = [{
-    id: 1,
-    task: 'clean desk',
-    done: true,
-},
-{
-    id: 2,
-    task: 'do laundry',
-    done: false,
-}]
-
 export const tasksSlice = createSlice({
     name: "tasks",
-    initialState: {value: exampleData},
+    initialState: {value: []},
     reducers: {
         addTask: (state, action) => {
             state.value.push(action.payload)

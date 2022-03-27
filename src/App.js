@@ -1,33 +1,48 @@
-import "./App.css";
-import { useState } from "react";
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { IconButton, Input, TextField } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTask, deleteTask, updateTask} from './features/Tasks'
+import Tasks from './components/Task';
+import { addTask } from './features/Tasks';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import './App.css';
 
-function App() {
-  
+
+export default function App() {
   const [ task, setTask ] = useState('');
+  const [value, setValue] = useState(0);
 
-  const tasksList = useSelector((state) => state.tasks.value)
+  const handleChange = (e, value) => {
+    setValue(value);
+  };
   const dispatch = useDispatch();
 
-  return(  
-  <div className="App">
-    <div className="addTask">
-      <input type="text" placeholder="Add task" onChange={(event) => setTask(event.target.value)}/>
-      <button onClick={() => {dispatch(addTask({id: tasksList[tasksList.length - 1].id + 1, task, done: false}))}}>Creat Task</button>
-    </div>
-    <div className="displayTasks">
-      {tasksList.map((task) => {
-        return (
-        <div>
-          <h1>{task.task}</h1>
-          <button onClick={() => {dispatch(updateTask({id: task.id , done: task.done}))}}>Done</button>
-          <button onClick={() => {dispatch(deleteTask({id: task.id}))}}>Remove</button>
-        </div>)
-      })}
-    </div>
-  </div>
-  )
-}
+  const tasksList = useSelector((state) => state.tasks.value)
 
-export default App;
+  function newTask () {
+    tasksList.length === 0 ? 
+      dispatch(addTask({id: 1, task, done: false})) : 
+      dispatch(addTask({id: tasksList[tasksList.length - 1 ].id + 1, task, done: false}))
+    document.getElementById('input').value = "";
+    setTask('')
+  }
+
+  return (
+    <div className='App'>
+      <div style={{'paddingLeft': '30px', 'paddingTop': '20px'}}>
+      <TextField id='input' className='create-task-input' variant="standard" hiddenLabel placeholder="Add new task" onChange={(event) => setTask(event.target.value)}/>
+      <IconButton disabled={task.length === 0} className='new-task-btn' onClick={() => {newTask()}}><DoneOutlinedIcon color="primary"/></IconButton>
+      </div>
+    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <Tabs value={value} onChange={handleChange} centered>
+        <Tab label="All tasks" />
+        <Tab label="Open" />
+        <Tab label="Done" />
+      </Tabs>
+    </Box>
+    {value === 0 ? ( <Tasks tab={0} />) : value === 1 ? (<Tasks done='false' tab={1}/>) :( <Tasks done='true' tab={2} />)}
+    </div>
+  );
+}
